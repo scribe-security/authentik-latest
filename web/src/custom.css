@@ -1,1 +1,183 @@
-/* User customisable */
+.pf-c-login.sidebar_right::before {
+    content: ''; /* Necessary for the pseudo-element to be generated */
+    display: block; /* Treat the pseudo-element like a block-level element */
+    width: 100%; /* Use 100% of the parent width */
+    aspect-ratio: 820 / 643;
+    background-image: url('/static/dist/assets/images/scribe_welcome.svg'); /* The image you want to add */
+    background-size: cover; /* Cover the entire area of the pseudo-element */
+    background-position: center; /* Center the background image */
+    margin: auto!important; /* Center the pseudo-element horizontally if necessary */
+    max-width: 50rem;
+}
+
+@media screen and (max-width: 1024px) {
+    .pf-c-login.sidebar_right::before {
+        display: none !important;
+    }
+}
+.sidebar_right{
+    padding-left: 30px;
+}
+.ak-login-container {
+    margin-left: 30px;
+    padding-top: 0;
+}
+
+.ak-login-container::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 1); /* Default light background */
+    animation: fadeOutOverlay 0.5s ease 2s forwards;
+}
+@keyframes hideElement {
+    0% {
+        opacity: 1;
+    }
+    99% {
+        opacity: 0;
+    }
+    100% {
+        display: none;
+    }
+}
+
+.ak-login-container::after {
+    content: "";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    aspect-ratio: 1;
+    border: 6px solid rgba(0, 0, 0, .1);
+    border-left-color: transparent;
+    animation: spin89345 1s linear infinite, hideElement 4s forwards;
+    border-radius: 50%;
+
+
+    z-index: 1001; /* Ensures loader is above the overlay */
+}
+
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+
+@keyframes fadeOutOverlay {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+@keyframes fadeOutLoader {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+@keyframes spin89345 {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+a[href^="https://unsplash.com/@theforestbirds"] {display:none !important}
+a[href^="https://goauthentik.io?utm_source=authentik&utm_medium=flow"] {display:none !important;}
+
+.pf-c-drawer__content, .pf-c-drawer__panel, .pf-c-drawer__panel-main {
+    /*overflow: visible !important;*/
+}
+
+.pf-c-login__main > :last-child:not(.pf-c-login__main-footer) {
+    padding-bottom: 2rem;
+}
+.pf-c-login__main-header.pf-c-brand.ak-brand{
+    padding: 1rem;
+}
+.pf-c-login__main-header{
+    padding: 1rem;
+    text-align: center;
+}
+.ak-login-container{
+    /*overflow-scrolling: auto;*/
+    padding-top: 1rem;
+    overflow: auto;
+    height: fit-content;
+}
+
+.pf-c-login__main-body, .pf-c-login__main-footer-links{
+    padding: 0 2rem 1rem 2rem;
+
+}
+.pf-c-login__main-footer-links{
+    padding: 0 2rem 0.5rem 2rem;
+}
+
+.pf-c-drawer__body {
+    overflow: hidden;
+}
+.pf-c-login__footer, .pf-c-login__header {
+    --pf-global--Color--100: none;
+}
+.pf-c-list.pf-m-inline li {
+    margin-right: 1rem!important;
+    margin-left: 1rem!important;
+}
+.pf-c-list.pf-m-inline li:not(:first-child) {
+    display: none;
+}
+
+.tc-text {
+    padding: 1rem;
+    text-align: center;
+}
+
+.ak-login-container::-webkit-scrollbar-thumb {
+    overflow: scroll;
+}
+
+.pf-c-login.sidebar_left .ak-login-container, .pf-c-login.sidebar_right .ak-login-container {
+    padding-left: 0;
+    padding-right: 0;
+}
+.pf-c-login__footer ul.pf-c-list.pf-m-inline{
+    padding-symotion-sleft: 1rem;
+    padding-right: 1rem;
+    padding: 0 2rem 1rem 2rem
+}
+
+.pf-c-form__group.pf-m-action {
+    margin-top: 0;
+}
+.pf-c-login__footer .pf-c-list a {
+    color: var(--pf-global--link--Color) !important;
+}
+
+body{
+    font-size: 12px!important;
+}
