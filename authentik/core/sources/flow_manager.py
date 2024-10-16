@@ -330,9 +330,8 @@ class SourceFlowManager:
         """Login user and redirect."""
         flow_kwargs = {
             PLAN_CONTEXT_PENDING_USER: connection.user,
+            PLAN_CONTEXT_PROMPT: delete_none_values(self.user_properties)
         }
-        if hasattr(self, 'enroll_info'):
-            flow_kwargs[PLAN_CONTEXT_PROMPT] = delete_none_values(self.enroll_info)
         return self._prepare_flow(
             self.source.authentication_flow,
             connection,
