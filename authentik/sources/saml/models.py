@@ -230,7 +230,9 @@ class SAMLSource(Source):
         for key, value in attributes.items():
             if key == "groups":
                 continue
-            attributes[key] = BaseEvaluator.expr_flatten(value)
+            #SH-5796 permanent patch - allow lists in user attributes
+            if not (key.startswith("attributes.") and len(value) > 1):
+                attributes[key] = BaseEvaluator.expr_flatten(value)
         attributes["username"] = name_id.text
 
         return attributes

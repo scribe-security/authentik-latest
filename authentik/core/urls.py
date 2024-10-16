@@ -29,6 +29,7 @@ from authentik.flows.views.interface import FlowInterfaceView
 from authentik.root.asgi_middleware import SessionMiddleware
 from authentik.root.messages.consumer import MessageConsumer
 from authentik.root.middleware import ChannelsLoggingMiddleware
+import os
 
 urlpatterns = [
     path(
@@ -49,9 +50,16 @@ urlpatterns = [
         name="if-admin",
     ),
     path(
-        "if/user/",
-        ensure_csrf_cookie(BrandDefaultRedirectView.as_view(template_name="if/user.html")),
+        #SH-5454 - permanent patch - redirect /if/user/ to default application if set
+        "application/launch/" + os.environ.get("AUTHENTIK_DEFAULT_USER_APPLICATION") + "/" if os.environ.get("AUTHENTIK_DEFAULT_USER_APPLICATION") else "if/user/",
+        RedirectToAppLaunch.as_view() if os.environ.get("AUTHENTIK_DEFAULT_USER_APPLICATION") else ensure_csrf_cookie(InterfaceView.as_view(template_name="if/user.html")),
         name="if-user",
+    ),
+    path(
+        #SH-5454 - permanent patch - allow /if/user/ when accessed directly
+        "if/user/",
+        ensure_csrf_cookie(InterfaceView.as_view(template_name="if/user.html")),
+        name="if-user-direct",
     ),
     path(
         "if/flow/<slug:flow_slug>/",
