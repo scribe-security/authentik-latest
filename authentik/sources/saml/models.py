@@ -223,6 +223,9 @@ class SAMLSource(Source):
             attributes.setdefault(key, [])
             for value in attribute.iterchildren():
                 attributes[key].append(value.text)
+        if SAML_ATTRIBUTES_GROUP in attributes:
+            attributes["groups"] = attributes[SAML_ATTRIBUTES_GROUP]
+            del attributes[SAML_ATTRIBUTES_GROUP]
         # Flatten all lists in the dict
         for key, value in attributes.items():
             if key == "groups":
@@ -230,7 +233,7 @@ class SAMLSource(Source):
             #SH-5796 permanent patch - allow lists in user attributes
             if not (key.startswith("attributes.") and len(value) > 1):
                 attributes[key] = BaseEvaluator.expr_flatten(value)
-        attributes["username"] = self._get_name_id().text
+        attributes["username"] = name_id.text
 
         return attributes
 
