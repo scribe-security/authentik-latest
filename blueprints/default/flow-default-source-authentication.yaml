@@ -1,175 +1,75 @@
 version: 1
 metadata:
-  name: Default - Authentication flow
+  name: Default - Source authentication flow
 context:
-  identification_sources: !If [
-    !Condition [ AND, !Env [ AUTHENTIK_GITHUB_CONSUMER_KEY, null ], !Env [ AUTHENTIK_GITHUB_CONSUMER_SECRET, null ] ],
-    !If [
-      !Condition [ AND, !Env [ AUTHENTIK_GOOGLE_CONSUMER_KEY, null ], !Env [ AUTHENTIK_GOOGLE_CONSUMER_SECRET, null ] ],
-      [ "google", "github" ],
-      [ "github" ],
-    ],
-    !If [
-      !Condition [ AND, !Env [ AUTHENTIK_GOOGLE_CONSUMER_KEY, null ], !Env [ AUTHENTIK_GOOGLE_CONSUMER_SECRET, null ] ],
-      [ "google" ],
-      [],
-    ],
-  ]
   scribe_hub_redirect_uri: !Env [AUTHENTIK_SCRIBE_HUB_REDIRECT_AFTER_LOGIN_URI, null]
-  captcha_public_key: !Env [AUTHENTIK_CAPTCHA_PUBLIC_KEY, null]
-  captcha_private_key: !Env [AUTHENTIK_CAPTCHA_PRIVATE_KEY, null]
-  setup_captcha: !Condition [ AND, !Env [ AUTHENTIK_CAPTCHA_PUBLIC_KEY, null ], !Env [ AUTHENTIK_CAPTCHA_PRIVATE_KEY, null ] ]
 entries:
 #dependencies
-- model: authentik_blueprints.metaapplyblueprint
-  attrs:
+- attrs:
     identifiers:
-      name: Default - Password change flow
-    required: false
-- model: authentik_blueprints.metaapplyblueprint
-  attrs:
-    identifiers:
-      name: Scribe - Enrollment with email verification
+      name: Scribe - Enrollment Policies
     required: true
-- model: authentik_blueprints.metaapplyblueprint
-  attrs:
-    identifiers:
-      name: Scribe - Password recovery flow
-    required: true
-- model: authentik_blueprints.metaapplyblueprint
-  attrs:
-    identifiers:
-      name: Scribe - Sources - Google
-    required: true
-- model: authentik_blueprints.metaapplyblueprint
-  attrs:
-    identifiers:
-      name: Scribe - Sources - Github
-    required: true
+  model: authentik_blueprints.metaapplyblueprint
 #flow
 - attrs:
     designation: authentication
-    name:  Welcome to Scribe!
-    title:  Welcome to Scribe!
-    authentication: require_unauthenticated
+    name: Welcome to Scribe!
+    title: Welcome to Scribe!
     layout: sidebar_right
+    authentication: require_unauthenticated
     denied_action: continue
   identifiers:
-    slug: default-authentication-flow
+    slug: default-source-authentication
   model: authentik_flows.flow
   id: flow
-#stages
 - attrs:
-    backends:
-    - authentik.core.auth.InbuiltBackend
-    - authentik.sources.ldap.auth.LDAPBackend
-    - authentik.core.auth.TokenBackend
+    expression:  |
+      # This policy ensures that this flow can only be used when the user
+      # is in a SSO Flow (meaning they come from an external IdP)
+      return ak_is_sso_flow
   identifiers:
-    name: default-authentication-password
-  id: default-authentication-password
-  model: authentik_stages_password.passwordstage
+    name: default-source-authentication-if-sso
+  id: default-source-authentication-if-sso
+  model: authentik_policies_expression.expressionpolicy
 - identifiers:
-    name: default-authentication-mfa-validation
-  id: default-authentication-mfa-validation
-  model: authentik_stages_authenticator_validate.authenticatorvalidatestage
-- attrs:
-    user_fields:
-    - email
-    - username
-    enrollment_flow: !Find [authentik_flows.flow, [slug, scribe-enrollment-flow]]
-    password_stage: !KeyOf default-authentication-password
-    recovery_flow: !Find [authentik_flows.flow, [slug, default-recovery-flow]]
-    sources: !Enumerate [
-      !Context identification_sources,
-      SEQ,
-      !Find [authentik_sources_oauth.oauthsource, [slug, !Value 0]]
-      ]
-  identifiers:
-    name: default-authentication-identification
-  id: default-authentication-identification
-  model: authentik_stages_identification.identificationstage
-  state: present
-- identifiers:
-    name: default-authentication-login
-  id: default-authentication-login
+    name: default-source-authentication-login
+  id: default-source-authentication-login
   model: authentik_stages_user_login.userloginstage
 - identifiers:
-    name: scribe-captcha
-  id: scribe-captcha
-  model: authentik_stages_captcha.captchastage
+    name: default-source-authentication-user-write
+  id: default-source-authentication-user-write
+  model: authentik_stages_user_write.userwritestage
   attrs:
-    api_url: https://www.recaptcha.net/recaptcha/api/siteverify
-    js_url: https://www.recaptcha.net/recaptcha/api.js
-    public_key: !Context captcha_public_key
-    private_key: !Context captcha_private_key
-  conditions:
-    - !If [!Context setup_captcha]
-#stage bindings
+    create_users_as_inactive: false
+    user_creation_mode: never_create
+  state: present
 - identifiers:
-    order: 10
-    stage: !KeyOf default-authentication-identification
-    target: !KeyOf flow
-  model: authentik_flows.flowstagebinding
-- identifiers:
-    order: 20
-    stage: !KeyOf default-authentication-password
-    target: !KeyOf flow
-  attrs:
-    re_evaluate_policies: true
-  id: default-authentication-flow-password-binding
-  model: authentik_flows.flowstagebinding
-- identifiers:
-    order: 30
-    stage: !KeyOf default-authentication-mfa-validation
-    target: !KeyOf flow
-  model: authentik_flows.flowstagebinding
-- identifiers:
-    target: !KeyOf flow
-    stage: !KeyOf scribe-captcha
-    order: 50
-  id: flow-binding-captcha
-  model: authentik_flows.flowstagebinding
-  attrs:
-    evaluate_on_plan: false
-    re_evaluate_policies: true
-  conditions:
-    - !If [!Context setup_captcha]
-- identifiers:
-    order: 100
-    stage: !KeyOf default-authentication-login
-    target: !KeyOf flow
-  model: authentik_flows.flowstagebinding
-- model: authentik_policies_expression.expressionpolicy
-  id: default-authentication-flow-password-optional
-  identifiers:
-    name: default-authentication-flow-password-stage
-  attrs:
-    expression: |
-      flow_plan = request.context.get("flow_plan")
-      if not flow_plan:
-          return True
-      # If the user does not have a backend attached to it, they haven't
-      # been authenticated yet and we need the password stage
-      return not hasattr(flow_plan.context.get("pending_user"), "backend")
-- model: authentik_policies.policybinding
-  identifiers:
-    order: 10
-    target: !KeyOf default-authentication-flow-password-binding
-    policy: !KeyOf default-authentication-flow-password-optional
-- identifiers:
-    name: default-authentication-flow-conditional-captcha
-  id: default-authentication-flow-conditional-captcha
-  model: authentik_policies_reputation.reputationpolicy
-  attrs:
-    check_ip: true
-    check_username: true
-    threshold: -5
-  conditions:
-    - !If [!Context setup_captcha]
-- identifiers:
-    policy: !KeyOf default-authentication-flow-conditional-captcha
-    target: !KeyOf flow-binding-captcha
     order: 0
+    stage: !KeyOf default-source-authentication-login
+    target: !KeyOf flow
+  model: authentik_flows.flowstagebinding
+- identifiers:
+    order: 50
+    stage: !KeyOf default-source-authentication-user-write
+    target: !KeyOf flow
+  id: user-write-binding
+  model: authentik_flows.flowstagebinding
+- identifiers:
+    order: 0
+    policy: !Find [ authentik_policies_expression.expressionpolicy, [name, default-enrollment-username-from-email ]]
+    target: !KeyOf user-write-binding
+  attrs:
+    enabled: true
+    order: 0
+    timeout: 30
   model: authentik_policies.policybinding
-  conditions:
-    - !If [!Context setup_captcha]
+- identifiers:
+    order: 70
+    stage: !KeyOf default-source-authentication-login
+    target: !KeyOf flow
+  model: authentik_flows.flowstagebinding
+- identifiers:
+    order: 0
+    policy: !KeyOf default-source-authentication-if-sso
+    target: !KeyOf flow
+  model: authentik_policies.policybinding
