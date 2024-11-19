@@ -127,6 +127,8 @@ class SourceFlowManager:
             new_connection = self.user_connection_type(
                 source=self.source, identifier=self.identifier
             )
+            new_connection.user = self.request.user
+            new_connection = self.update_user_connection(new_connection, **kwargs)
 
             # #SH-6656 - fix: 405 is shown when login through okta, while being already logged in to our app
             # Bug report: xxx
@@ -138,8 +140,6 @@ class SourceFlowManager:
                     f"UserSourceConnection with user={new_connection.user} and source={new_connection.source} already exists."
                 )
 
-            new_connection.user = self.request.user
-            new_connection = self.update_user_connection(new_connection, **kwargs)
             return Action.LINK, new_connection
 
         action, connection = self.matcher.get_user_action(self.identifier, self.user_properties)
