@@ -6,10 +6,12 @@ metadata:
 entries:
   - identifiers:
       managed: goauthentik.io/sources/ldap/default-dn-path
-    model: authentik_sources_ldap.ldapsourcepropertymapping
+    model: authentik_sources_ldap.ldappropertymapping
     attrs:
       name: "authentik default LDAP Mapping: DN to User Path"
+      object_field: "path"
       expression: |
+        dn = ldap.get("distinguishedName")
         path_elements = []
         for pair in dn.split(","):
             attr, _, value = pair.partition("=")
@@ -22,87 +24,70 @@ entries:
         path = source.get_user_path()
         if len(path_elements) > 0:
             path = f"{path}/{'/'.join(path_elements)}"
-        return {
-            "path": path
-        }
+        return path
   - identifiers:
       managed: goauthentik.io/sources/ldap/default-name
-    model: authentik_sources_ldap.ldapsourcepropertymapping
+    model: authentik_sources_ldap.ldappropertymapping
     attrs:
       name: "authentik default LDAP Mapping: Name"
+      object_field: "name"
       expression: |
-        return {
-            "name": ldap.get("name"),
-        }
+        return ldap.get('name')
   - identifiers:
       managed: goauthentik.io/sources/ldap/default-mail
-    model: authentik_sources_ldap.ldapsourcepropertymapping
+    model: authentik_sources_ldap.ldappropertymapping
     attrs:
       name: "authentik default LDAP Mapping: mail"
+      object_field: "email"
       expression: |
-        return {
-            "email": ldap.get("mail"),
-        }
+        return ldap.get('mail')
   # ActiveDirectory-specific mappings
   - identifiers:
       managed: goauthentik.io/sources/ldap/ms-samaccountname
-    model: authentik_sources_ldap.ldapsourcepropertymapping
+    model: authentik_sources_ldap.ldappropertymapping
     attrs:
       name: "authentik default Active Directory Mapping: sAMAccountName"
+      object_field: "username"
       expression: |
-        return {
-            "username": ldap.get("sAMAccountName"),
-        }
+        return ldap.get('sAMAccountName')
   - identifiers:
       managed: goauthentik.io/sources/ldap/ms-userprincipalname
-    model: authentik_sources_ldap.ldapsourcepropertymapping
+    model: authentik_sources_ldap.ldappropertymapping
     attrs:
       name: "authentik default Active Directory Mapping: userPrincipalName"
       object_field: "attributes.upn"
       expression: |
-        return {
-            "attributes": {
-                "upn": list_flatten(ldap.get("userPrincipalName")),
-            },
-        }
+        return list_flatten(ldap.get('userPrincipalName'))
   - identifiers:
       managed: goauthentik.io/sources/ldap/ms-givenName
-    model: authentik_sources_ldap.ldapsourcepropertymapping
+    model: authentik_sources_ldap.ldappropertymapping
     attrs:
       name: "authentik default Active Directory Mapping: givenName"
+      object_field: "attributes.givenName"
       expression: |
-        return {
-            "attributes": {
-                "givenName": list_flatten(ldap.get("givenName")),
-            },
-        }
+        return list_flatten(ldap.get('givenName'))
   - identifiers:
       managed: goauthentik.io/sources/ldap/ms-sn
-    model: authentik_sources_ldap.ldapsourcepropertymapping
+    model: authentik_sources_ldap.ldappropertymapping
     attrs:
       name: "authentik default Active Directory Mapping: sn"
+      object_field: "attributes.sn"
       expression: |
-        return {
-            "attributes": {
-                "sn": list_flatten(ldap.get("sn")),
-            },
-        }
+        return list_flatten(ldap.get('sn'))
   # OpenLDAP specific mappings
   - identifiers:
       managed: goauthentik.io/sources/ldap/openldap-uid
-    model: authentik_sources_ldap.ldapsourcepropertymapping
+    model: authentik_sources_ldap.ldappropertymapping
     attrs:
       name: "authentik default OpenLDAP Mapping: uid"
+      object_field: "username"
       expression: |
-        return {
-            "username": ldap.get("uid"),
-        }
+        return ldap.get('uid')
   - identifiers:
       managed: goauthentik.io/sources/ldap/openldap-cn
-    model: authentik_sources_ldap.ldapsourcepropertymapping
+    model: authentik_sources_ldap.ldappropertymapping
     attrs:
       name: "authentik default OpenLDAP Mapping: cn"
+      object_field: "name"
       expression: |
-        return {
-            "name": ldap.get("cn"),
-        }
+        return ldap.get('cn')
