@@ -129,6 +129,17 @@ class SourceFlowManager:
             )
             new_connection.user = self.request.user
             new_connection = self.update_user_connection(new_connection, **kwargs)
+
+            # #SH-6656 - temporal fix: 405 is shown when login through okta, while being already logged in to our app
+            # Bug report: https://github.com/goauthentik/authentik/issues/12087
+            if UserSourceConnection.objects.filter(
+                user=new_connection.user,
+                source=new_connection.source
+            ).exists():
+                raise IntegrityError(
+                    f"UserSourceConnection with user={new_connection.user} and source={new_connection.source} already exists."
+                )
+
             return Action.LINK, new_connection
 
         action, connection = self.matcher.get_user_action(self.identifier, self.user_properties)

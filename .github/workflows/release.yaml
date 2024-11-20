@@ -15,7 +15,7 @@ concurrency:
 jobs:
   create-release:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/supreme'
+    if: github.ref == 'refs/heads/scribe-2024.10.1'
 
     steps:
     - name: Checkout code
@@ -30,7 +30,7 @@ jobs:
         tag: v${{ github.event.inputs.version }}
         tag_exists_error: false
         message: "Latest release"
-    
+
 
     - name: Create a GitHub release
       id: create_release
