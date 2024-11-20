@@ -28,19 +28,19 @@ jobs:
       - name: Extract Tag Name
         id: extract-tag
         run: echo "tag_name=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_OUTPUT
-  
+
   Build-Authentik:
     if: github.event_name == 'workflow_dispatch'
     name: Build Authentik Image
     runs-on: ubuntu-latest
     steps:
-      - name: Check Branch and Fail if 'supreme'
+      - name: Check Branch and Fail if it's scribe release branch
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/supreme" ]]; then
-            echo "Failing the workflow because it's running from the supreme branch."
+          if [[ "${{ github.ref }}" == "refs/heads/scribe-2024.10.1" ]]; then
+            echo "Failing the workflow because it's running from the scribe-2024.10.1 branch."
             exit 1
           fi
-          
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -62,7 +62,7 @@ jobs:
         run: |
           DOCKER_BUILDKIT=1 docker build -t ${{ steps.login-ecr.outputs.registry }}/authentik:${{ github.sha }} .
           docker push ${{ steps.login-ecr.outputs.registry }}/authentik:${{ github.sha }}
-        
+
   Build-Authentik-Image-Release:
     if: github.event_name == 'release' && startsWith(github.ref, 'refs/tags/v')
     name: Build and Push Authentik Image
@@ -111,7 +111,7 @@ jobs:
           # Tag and Push to Prod ECR
           docker tag authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }} ${{ steps.login-ecr-prod.outputs.registry }}/authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }}
           docker push ${{ steps.login-ecr-prod.outputs.registry }}/authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }}
-  
+
   Update-Environment-Variable:
     if: ${{ always() && github.event_name == 'workflow_dispatch' && needs.Build-Authentik.result == 'success' }}
     name: Update Environment Variable with Docker Image Tag
