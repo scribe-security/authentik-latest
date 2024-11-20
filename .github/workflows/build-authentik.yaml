@@ -34,13 +34,6 @@ jobs:
     name: Build Authentik Image
     runs-on: ubuntu-latest
     steps:
-      - name: Check Branch and Fail if it's scribe release branch
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/scribe-2024.10.1" ]]; then
-            echo "Failing the workflow because it's running from the scribe-2024.10.1 branch."
-            exit 1
-          fi
-
       - name: Checkout
         uses: actions/checkout@v4
 
