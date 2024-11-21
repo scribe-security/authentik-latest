@@ -14,9 +14,9 @@ entries:
 # event matcher policies
 - attrs:
     action: login
-    app: authentik.events
+    app: null
     client_ip: null
-    model: authentik_events.event
+    model: null
     name: scribe-hub-login-event-policy
   conditions: []
   id: scribe-hub-login-event-policy
@@ -26,9 +26,9 @@ entries:
   state: present
 - attrs:
     action: logout
-    app: authentik.events
+    app: null
     client_ip: null
-    model: authentik_events.event
+    model: null
     name: scribe-hub-logout-event-policy
   conditions: []
   id: scribe-hub-logout-event-policy
@@ -38,9 +38,9 @@ entries:
   state: present
 - attrs:
     action: login_failed
-    app: authentik.events
+    app: null
     client_ip: null
-    model: authentik_events.event
+    model: null
     name: scribe-hub-login-failed-event-policy
   conditions: []
   id: scribe-hub-login-failed-event-policy
