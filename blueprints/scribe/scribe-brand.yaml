@@ -1,5 +1,7 @@
 metadata:
   name: Scribe - Brand
+context:
+  scribe_hub_app_name: !Format [scribe-hub-app%s, !Env [AUTHENTIK_SCRIBE_ENVIRONMENT_SUFFIX, ""]]
 version: 1
 entries:
   - model: authentik_blueprints.metaapplyblueprint
@@ -25,6 +27,7 @@ entries:
       branding_favicon: /static/dist/assets/icons/icon.png
       branding_logo: /static/dist/assets/icons/icon_left_brand.svg
       branding_title: Scribe Security
+      default_application: !Find [authentik_core.application, [slug, !Context scribe_hub_app_name]]
       domain: scribesecurity.com
       flow_authentication:
         !Find [authentik_flows.flow, [slug, default-authentication-flow]]

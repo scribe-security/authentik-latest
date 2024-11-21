@@ -151,6 +151,7 @@ entries:
     policy_engine_mode: any
     provider: !KeyOf scribe-hub-provider
     slug: !Context scribe_hub_app_name
+    meta_launch_url: !Context scribe_hub_redirect_uri_1
   conditions: []
   id: scribe-hub-app
   identifiers:
