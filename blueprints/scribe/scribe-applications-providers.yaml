@@ -54,6 +54,24 @@ entries:
   model: authentik_providers_oauth2.scopemapping
   state: present
 - attrs:
+    expression: "namespaces = {\n\
+          'saml2': 'urn:oasis:names:tc:SAML:2.0:assertion'\n\
+      }\n\
+      scribe_teams_elements = root.findall('.//saml2:Attribute[@Name=\"attributes.scribe-teams\"]/saml2:AttributeValue', namespaces)\n\
+      scribe_teams = [element.text for element in scribe_teams_elements]\n\
+      return {\n\
+            'attributes': {\n\
+              'scribe-teams': scribe_teams,\n\
+              # Note: everything outside of attributes is being flatten by selecting first list element\n\
+            },\n\
+      }"
+  conditions: []
+  id: saml-source-scribe-teams-mapping
+  identifiers:
+    name: saml-source-scribe-teams-mapping
+  model: authentik_sources_saml.samlsourcepropertymapping
+  state: present
+- attrs:
     expression: 'return {
       "authentik_internal_id": request.user.pk,
       "hubspot_email": request.user.attributes.get("hubspot-email", "")
