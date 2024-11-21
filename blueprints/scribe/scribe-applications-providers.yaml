@@ -31,6 +31,7 @@ entries:
     name: !Context sh_service_account_group_name
     attributes:
       is_superuser: false
+      goauthentik.io/user/token-maximum-lifetime: days=365000
   id: sh-service-accounts-group
   state: present
 
