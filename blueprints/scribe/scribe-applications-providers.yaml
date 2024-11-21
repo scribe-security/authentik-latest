@@ -72,6 +72,7 @@ entries:
     access_code_validity: minutes=1
     access_token_validity: minutes=5
     authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+    invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
     client_id: !Context scribe_service_provider_client_id
     client_secret: !Context scribe_service_provider_client_secret
     client_type: confidential
@@ -97,6 +98,7 @@ entries:
     access_token_validity: minutes=5
     authentication_flow: !Find [authentik_flows.flow, [slug, default-authentication-flow]]
     authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+    invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
     client_id: !Context scribe_hub_provider_client_id
     client_type: public
     include_claims_in_id_token: true
