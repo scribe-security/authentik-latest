@@ -72,6 +72,33 @@ entries:
   model: authentik_sources_saml.samlsourcepropertymapping
   state: present
 - attrs:
+    expression: |
+      namespace = {
+          "ns1": "urn:oasis:names:tc:SAML:2.0:assertion",
+      }
+
+      email = name_id.text.lower()
+      # Naively make sure name_id is email, in case they do not set it up. We expect it to be email.
+      assert "@" in email
+
+      displayname = root.find(
+          ".//ns1:Attribute[@Name='http://schemas.microsoft.com/identity/claims/displayname']/ns1:AttributeValue",
+          namespace
+      )
+      displayname = displayname.text if displayname is not None else email.split("@")[0]
+
+      return {
+          "username": email,
+          "email": email,
+          "name": displayname,
+      }
+  conditions: []
+  id: azure-solarwind-saml-mapping
+  identifiers:
+    name: azure-solarwind-saml-mapping
+  model: authentik_sources_saml.samlsourcepropertymapping
+  state: present
+- attrs:
     expression: 'return {
       "authentik_internal_id": request.user.pk,
       "hubspot_email": request.user.attributes.get("hubspot-email", "")
