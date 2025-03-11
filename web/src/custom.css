@@ -144,11 +144,44 @@ a[href^="https://goauthentik.io?utm_source=authentik&utm_medium=flow"] {display:
 .pf-c-login__footer, .pf-c-login__header {
     --pf-global--Color--100: none;
 }
-.pf-c-list.pf-m-inline li {
-    margin-right: 1rem!important;
-    margin-left: 1rem!important;
+
+.pf-c-list.pf-m-inline li:nth-child(1){
+    margin-right: 0!important;
+    margin-left: auto!important;
+    margin-bottom: 1rem!important;
 }
-.pf-c-list.pf-m-inline li:not(:first-child) {
+
+.pf-c-list.pf-m-inline li:nth-child(2) {
+    margin-left: 2px!important;
+    margin-right: auto!important;
+    margin-bottom: 1rem!important;
+}
+
+.pf-c-list.pf-m-inline li:nth-child(3) {
+    text-align: center;
+    flex-basis: 100%;
+}
+
+.pf-c-list.pf-m-inline li:nth-child(4){
+    margin-left: auto!important;
+    margin-right: 1rem!important;
+    text-align: center;
+}
+.pf-c-list.pf-m-inline li:nth-child(5){
+    margin-left: 1rem!important;
+    margin-right: auto!important;
+    text-align: center;
+}
+
+.pf-c-list.pf-m-inline li:nth-child(6) {
+    margin-left: auto!important;
+    margin-right: auto!important;
+    margin-top: 1rem!important;
+    text-align: center;
+    flex-basis: 100%;
+}
+
+.pf-c-list.pf-m-inline li:last-child {
     display: none;
 }
 
@@ -164,11 +197,6 @@ a[href^="https://goauthentik.io?utm_source=authentik&utm_medium=flow"] {display:
 .pf-c-login.sidebar_left .ak-login-container, .pf-c-login.sidebar_right .ak-login-container {
     padding-left: 0;
     padding-right: 0;
-}
-.pf-c-login__footer ul.pf-c-list.pf-m-inline{
-    padding-symotion-sleft: 1rem;
-    padding-right: 1rem;
-    padding: 0 2rem 1rem 2rem
 }
 
 .pf-c-form__group.pf-m-action {
