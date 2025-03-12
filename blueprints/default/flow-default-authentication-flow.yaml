@@ -85,7 +85,11 @@ entries:
       !Find [ authentik_flows.flow, [ slug, scribe-enrollment-flow ] ]
     ]
     password_stage: !KeyOf default-authentication-password
-    recovery_flow: !Find [authentik_flows.flow, [slug, default-recovery-flow]]
+    recovery_flow: !If [
+      !Context self_registr_disabled,
+      null,
+      !Find [authentik_flows.flow, [slug, default-recovery-flow]]
+    ]
     sources: !Enumerate [
       !Context identification_sources,
       SEQ,

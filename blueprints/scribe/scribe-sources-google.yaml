@@ -27,6 +27,7 @@ entries:
       provider_type: google
       user_matching_mode: email_link
       user_path_template: goauthentik.io/sources/%(slug)s
+      icon: /static/dist/assets/icons/google_SI.svg
     conditions:
       - !If [!Context consumer_key]
       - !If [!Context consumer_secret]
