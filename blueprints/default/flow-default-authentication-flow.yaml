@@ -19,7 +19,7 @@ context:
   captcha_public_key: !Env [AUTHENTIK_CAPTCHA_PUBLIC_KEY, null]
   captcha_private_key: !Env [AUTHENTIK_CAPTCHA_PRIVATE_KEY, null]
   setup_captcha: !Condition [ AND, !Env [ AUTHENTIK_CAPTCHA_PUBLIC_KEY, null ], !Env [ AUTHENTIK_CAPTCHA_PRIVATE_KEY, null ] ]
-  self_registr_disabled: !Env [ HUB_SELF_REGISTR_DISABLED, null ] # WARNING: as of authentik 24.10 setting this to false/0 will still make it interpreted sa true. This needs to me undefined to be false.
+  self_registr_disabled: !Env [ HUB_SELF_REGISTR_DISABLED_IF_DEFINED, null ] # WARNING: as of authentik 24.10 setting this to false/0 will still make it interpreted sa true. This needs to me undefined to be false.
 entries:
 #dependencies
 - model: authentik_blueprints.metaapplyblueprint
