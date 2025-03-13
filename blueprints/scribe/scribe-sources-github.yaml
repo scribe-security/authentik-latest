@@ -32,6 +32,7 @@ entries:
       profile_url: https://api.github.com/user
       oidc_jwks_url: https://token.actions.githubusercontent.com/.well-known/jwks
       oidc_well_known_url: https://token.actions.githubusercontent.com/.well-known/openid-configuration
+      icon: /static/dist/assets/icons/github_SI.svg
     conditions:
       - !If [!Context consumer_key]
       - !If [!Context consumer_secret]
