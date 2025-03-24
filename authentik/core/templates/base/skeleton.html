@@ -14,7 +14,7 @@
         {% block head_before %}
         {% endblock %}
         <link rel="stylesheet" type="text/css" href="{% static 'dist/authentik.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'dist/custom.css' %}" data-inject>
+        <link rel="stylesheet" type="text/css" href="{% static 'dist/custom.css' %}?v=1.1" data-inject>
         {% versioned_script "dist/poly-%v.js" %}
         {% versioned_script "dist/standalone/loading/index-%v.js" %}
         {% block head %}
