@@ -4,7 +4,7 @@ const config: KnipConfig = {
     "entry": [
         "./src/admin/AdminInterface/AdminInterface.ts",
         "./src/user/UserInterface.ts",
-        "./src/flow/FlowInterface.ts",
+        "./src/flow/FlowInterfaceV1.1.ts",
         "./src/standalone/api-browser/index.ts",
         "./src/enterprise/rac/index.ts",
         "./src/standalone/loading/index.ts",
