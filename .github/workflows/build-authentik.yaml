@@ -81,7 +81,7 @@ jobs:
       - name: Build, Tag, and Push Authentik Image to Dev ECR
         id: build-image-dev
         run: |
-          DOCKER_BUILDKIT=1 docker build --build-arg GIT_BUILD_HASH=${{ github.sha }} -t authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }} .
+          DOCKER_BUILDKIT=1 docker build -t authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }} .
           docker tag authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }} ${{ steps.login-ecr-dev.outputs.registry }}/authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }}
           docker push ${{ steps.login-ecr-dev.outputs.registry }}/authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }}
 
