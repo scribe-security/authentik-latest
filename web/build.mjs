@@ -72,7 +72,7 @@ for (const [source, rawdest, strip] of otherFiles) {
 const interfaces = [
     ["admin/AdminInterface/AdminInterface.ts", "admin"],
     ["user/UserInterface.ts", "user"],
-    ["flow/FlowInterface.ts", "flow"],
+    ["flow/FlowInterfaceV1.1.ts", "flow"],
     ["standalone/api-browser/index.ts", "standalone/api-browser"],
     ["enterprise/rac/index.ts", "enterprise/rac"],
     ["standalone/loading/index.ts", "standalone/loading"],
