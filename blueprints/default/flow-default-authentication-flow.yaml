@@ -242,23 +242,11 @@ entries:
     stage: !KeyOf default-authentication-login
     target: !KeyOf password-flow
   model: authentik_flows.flowstagebinding
-- model: authentik_policies_expression.expressionpolicy
-  id: password-authentication-flow-password-optional
-  identifiers:
-    name: default-authentication-flow-password-stage
-  attrs:
-    expression: |
-      flow_plan = request.context.get("flow_plan")
-      if not flow_plan:
-          return True
-      # If the user does not have a backend attached to it, they haven't
-      # been authenticated yet and we need the password stage
-      return not hasattr(flow_plan.context.get("pending_user"), "backend")
 - model: authentik_policies.policybinding
   identifiers:
     order: 10
     target: !KeyOf password-authentication-flow-password-binding
-    policy: !KeyOf password-authentication-flow-password-optional
+    policy: !KeyOf default-authentication-flow-password-optional
 - identifiers:
     name: password-authentication-flow-conditional-captcha
   id: password-authentication-flow-conditional-captcha
