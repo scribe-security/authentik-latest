@@ -47,7 +47,7 @@ entries:
     identifiers:
       name: Scribe - Sources - Github
     required: true
-#flow
+#default flow
 - attrs:
     designation: authentication
     name:  Welcome to Scribe!
@@ -59,7 +59,7 @@ entries:
     slug: default-authentication-flow
   model: authentik_flows.flow
   id: flow
-#stages
+#default stages
 - attrs:
     backends:
     - authentik.core.auth.InbuiltBackend
@@ -115,7 +115,88 @@ entries:
     private_key: !Context captcha_private_key
   conditions:
     - !If [!Context setup_captcha]
-#stage bindings
+#default flow stage bindings
+- identifiers:
+    order: 10
+    stage: !KeyOf default-authentication-identification
+    target: !KeyOf flow
+  model: authentik_flows.flowstagebinding
+- identifiers:
+    order: 20
+    stage: !KeyOf default-authentication-password
+    target: !KeyOf flow
+  attrs:
+    re_evaluate_policies: true
+  id: default-authentication-flow-password-binding
+  model: authentik_flows.flowstagebinding
+- identifiers:
+    order: 30
+    stage: !KeyOf default-authentication-mfa-validation
+    target: !KeyOf flow
+  model: authentik_flows.flowstagebinding
+- identifiers:
+    target: !KeyOf flow
+    stage: !KeyOf scribe-captcha
+    order: 50
+  id: flow-binding-captcha
+  model: authentik_flows.flowstagebinding
+  attrs:
+    evaluate_on_plan: false
+    re_evaluate_policies: true
+  conditions:
+    - !If [!Context setup_captcha]
+- identifiers:
+    order: 100
+    stage: !KeyOf default-authentication-login
+    target: !KeyOf flow
+  model: authentik_flows.flowstagebinding
+- model: authentik_policies_expression.expressionpolicy
+  id: default-authentication-flow-password-optional
+  identifiers:
+    name: default-authentication-flow-password-stage
+  attrs:
+    expression: |
+      flow_plan = request.context.get("flow_plan")
+      if not flow_plan:
+          return True
+      # If the user does not have a backend attached to it, they haven't
+      # been authenticated yet and we need the password stage
+      return not hasattr(flow_plan.context.get("pending_user"), "backend")
+- model: authentik_policies.policybinding
+  identifiers:
+    order: 10
+    target: !KeyOf default-authentication-flow-password-binding
+    policy: !KeyOf default-authentication-flow-password-optional
+- identifiers:
+    name: default-authentication-flow-conditional-captcha
+  id: default-authentication-flow-conditional-captcha
+  model: authentik_policies_reputation.reputationpolicy
+  attrs:
+    check_ip: true
+    check_username: true
+    threshold: -5
+  conditions:
+    - !If [!Context setup_captcha]
+- identifiers:
+    policy: !KeyOf default-authentication-flow-conditional-captcha
+    target: !KeyOf flow-binding-captcha
+    order: 0
+  model: authentik_policies.policybinding
+  conditions:
+    - !If [!Context setup_captcha]
+#default flow
+- attrs:
+    designation: authentication
+    name:  Welcome to Scribe!
+    title:  Welcome to Scribe!
+    authentication: require_unauthenticated
+    layout: sidebar_right
+    denied_action: continue
+  identifiers:
+    slug: default-authentication-flow
+  model: authentik_flows.flow
+  id: flow
+#password flow stage bindings
 - identifiers:
     order: 10
     stage: !KeyOf default-authentication-identification
