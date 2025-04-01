@@ -184,42 +184,53 @@ entries:
   model: authentik_policies.policybinding
   conditions:
     - !If [!Context setup_captcha]
-#default flow
+#password flow
 - attrs:
     designation: authentication
-    name:  Welcome to Scribe!
+    name:  Welcome to Scribe! (Password)
     title:  Welcome to Scribe!
     authentication: require_unauthenticated
     layout: sidebar_right
     denied_action: continue
   identifiers:
-    slug: default-authentication-flow
+    slug: password-authentication-flow
   model: authentik_flows.flow
-  id: flow
+  id: password-flow
+#password stages
+- attrs:
+    user_fields: [ "email", "username" ]
+    enrollment_flow: !Find [ authentik_flows.flow, [ slug, scribe-enrollment-flow ] ]
+    password_stage: !KeyOf default-authentication-password
+    recovery_flow: !Find [authentik_flows.flow, [slug, default-recovery-flow]]
+  identifiers:
+    name: password-authentication-identification
+  id: password-authentication-identification
+  model: authentik_stages_identification.identificationstage
+  state: present
 #password flow stage bindings
 - identifiers:
     order: 10
-    stage: !KeyOf default-authentication-identification
-    target: !KeyOf flow
+    stage: !KeyOf password-authentication-identification
+    target: !KeyOf password-flow
   model: authentik_flows.flowstagebinding
 - identifiers:
     order: 20
     stage: !KeyOf default-authentication-password
-    target: !KeyOf flow
+    target: !KeyOf password-flow
   attrs:
     re_evaluate_policies: true
-  id: default-authentication-flow-password-binding
+  id: password-authentication-flow-password-binding
   model: authentik_flows.flowstagebinding
 - identifiers:
     order: 30
     stage: !KeyOf default-authentication-mfa-validation
-    target: !KeyOf flow
+    target: !KeyOf password-flow
   model: authentik_flows.flowstagebinding
 - identifiers:
-    target: !KeyOf flow
+    target: !KeyOf password-flow
     stage: !KeyOf scribe-captcha
     order: 50
-  id: flow-binding-captcha
+  id: password-flow-binding-captcha
   model: authentik_flows.flowstagebinding
   attrs:
     evaluate_on_plan: false
@@ -229,10 +240,10 @@ entries:
 - identifiers:
     order: 100
     stage: !KeyOf default-authentication-login
-    target: !KeyOf flow
+    target: !KeyOf password-flow
   model: authentik_flows.flowstagebinding
 - model: authentik_policies_expression.expressionpolicy
-  id: default-authentication-flow-password-optional
+  id: password-authentication-flow-password-optional
   identifiers:
     name: default-authentication-flow-password-stage
   attrs:
@@ -246,11 +257,11 @@ entries:
 - model: authentik_policies.policybinding
   identifiers:
     order: 10
-    target: !KeyOf default-authentication-flow-password-binding
-    policy: !KeyOf default-authentication-flow-password-optional
+    target: !KeyOf password-authentication-flow-password-binding
+    policy: !KeyOf password-authentication-flow-password-optional
 - identifiers:
-    name: default-authentication-flow-conditional-captcha
-  id: default-authentication-flow-conditional-captcha
+    name: password-authentication-flow-conditional-captcha
+  id: password-authentication-flow-conditional-captcha
   model: authentik_policies_reputation.reputationpolicy
   attrs:
     check_ip: true
@@ -259,8 +270,8 @@ entries:
   conditions:
     - !If [!Context setup_captcha]
 - identifiers:
-    policy: !KeyOf default-authentication-flow-conditional-captcha
-    target: !KeyOf flow-binding-captcha
+    policy: !KeyOf password-authentication-flow-conditional-captcha
+    target: !KeyOf password-flow-binding-captcha
     order: 0
   model: authentik_policies.policybinding
   conditions:
