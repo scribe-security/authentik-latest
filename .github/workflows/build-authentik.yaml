@@ -33,8 +33,6 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     name: Build Authentik Image
     runs-on: ubuntu-latest
-    env:
-      SBOM_PRODUCT_KEY: Scribe-Authentik
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,17 +55,6 @@ jobs:
         run: |
           DOCKER_BUILDKIT=1 docker build -t ${{ steps.login-ecr.outputs.registry }}/authentik:${{ github.sha }} .
           docker push ${{ steps.login-ecr.outputs.registry }}/authentik:${{ github.sha }}
-       
-      - name: Generate signed SBOM for docker image
-        # Used after a docker image is built
-        uses: scribe-security/action-bom@master
-        with:
-          target: ${{ steps.login-ecr.outputs.registry }}/authentik:${{ github.sha }}
-          scribe-enable: true
-          product-key: ${{ env.SBOM_PRODUCT_KEY }}
-          product-version: ${{ github.sha }}
-          scribe-client-secret: ${{ secrets.SH_PROD_CLIENT_SECRET }}
-          format: attest,attest-slsa
 
   Build-Authentik-Image-Release:
     if: github.event_name == 'release' && startsWith(github.ref, 'refs/tags/v')
