@@ -62,7 +62,7 @@ jobs:
     needs: [Stage-Setup-Release]
     runs-on: ubuntu-latest
     env:
-      SBOM_PRODUCT_KEY: Scribe-Authentik
+      SBOM_PRODUCT_KEY: Authentik
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -114,7 +114,7 @@ jobs:
           target: authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }}
           scribe-enable: true
           product-key: ${{ env.SBOM_PRODUCT_KEY }}
-          product-version: ${{ needs.Stage-Setup-Release.outputs.tag_name }}
+          product-version: ${{ needs.Stage-Setup-Release.outputs.tag_name }}-scribe
           scribe-client-secret: ${{ secrets.SH_PROD_CLIENT_SECRET }}
           format: attest,attest-slsa
 
