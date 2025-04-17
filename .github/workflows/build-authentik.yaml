@@ -74,6 +74,8 @@ jobs:
     name: Build and Push Authentik Image
     needs: [Stage-Setup-Release]
     runs-on: ubuntu-latest
+    env:
+      SBOM_PRODUCT_KEY: Scribe-Authentik
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -117,6 +119,17 @@ jobs:
           # Tag and Push to Prod ECR
           docker tag authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }} ${{ steps.login-ecr-prod.outputs.registry }}/authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }}
           docker push ${{ steps.login-ecr-prod.outputs.registry }}/authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }}
+      
+      - name: Generate signed SBOM for docker image
+        # Used after a docker image is built
+        uses: scribe-security/action-bom@master
+        with:
+          target: authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }}
+          scribe-enable: true
+          product-key: ${{ env.SBOM_PRODUCT_KEY }}
+          product-version: ${{ github.sha }}
+          scribe-client-secret: ${{ secrets.SH_PROD_CLIENT_SECRET }}
+          format: attest,attest-slsa
 
   Update-Environment-Variable:
     if: ${{ always() && github.event_name == 'workflow_dispatch' && needs.Build-Authentik.result == 'success' }}
