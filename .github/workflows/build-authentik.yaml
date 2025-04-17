@@ -127,7 +127,7 @@ jobs:
           target: authentik:${{ needs.Stage-Setup-Release.outputs.tag_name }}
           scribe-enable: true
           product-key: ${{ env.SBOM_PRODUCT_KEY }}
-          product-version: ${{ github.sha }}
+          product-version: ${{ needs.Stage-Setup-Release.outputs.tag_name }}
           scribe-client-secret: ${{ secrets.SH_PROD_CLIENT_SECRET }}
           format: attest,attest-slsa
 
